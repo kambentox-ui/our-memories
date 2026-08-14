@@ -1,0 +1,78 @@
+{
+  "app": {
+    "title": "Our Memories",
+    "subtitle": "Every moment with you ♡"
+  },
+  "assetBaseUrl": "https://YOUR_USERNAME.github.io/our-memories",
+  "showcase": [
+    {
+      "eyebrow": "01 • Our Story",
+      "accent": "♡",
+      "title": "You & Me",
+      "body": "A tiny place for all the moments that became our favorite memories."
+    },
+    {
+      "eyebrow": "02 • The Beginning",
+      "accent": "☁",
+      "title": "Where it started",
+      "body": "Every story has a first page. This one is ours."
+    },
+    {
+      "eyebrow": "03 • Little Things",
+      "accent": "✦",
+      "title": "All the small moments",
+      "body": "The ordinary days somehow became the ones I never want to forget."
+    },
+    {
+      "eyebrow": "04 • Keep Scrolling",
+      "accent": "♡",
+      "title": "Our Memories",
+      "body": "Tap the dots. Open the dates. Keep every Polaroid close."
+    }
+  ],
+  "memories": [
+    {
+      "date": "2025-04-11",
+      "displayDate": "11/04/45",
+      "title": "Our first memory",
+      "description": "Change this text in data.json.",
+      "special": true,
+      "photos": [
+        {
+          "src": "assets/sample-1.svg",
+          "caption": "Our first special day ♡"
+        },
+        {
+          "src": "assets/sample-2.svg",
+          "caption": "A little moment"
+        }
+      ]
+    },
+    {
+      "date": "2025-04-15",
+      "displayDate": "15/04/45",
+      "title": "A day together",
+      "description": "This item alternates to the other side automatically.",
+      "special": false,
+      "photos": [
+        {
+          "src": "assets/sample-3.svg",
+          "caption": "Together ♡"
+        }
+      ]
+    },
+    {
+      "date": "2025-05-25",
+      "displayDate": "25/05/45",
+      "title": "Another favorite day",
+      "description": "Add as many timeline items as you want.",
+      "special": false,
+      "photos": [
+        {
+          "src": "assets/sample-4.svg",
+          "caption": "One more memory"
+        }
+      ]
+    }
+  ]
+}

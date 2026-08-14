@@ -1,0 +1,518 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#dff3ff">
+  <title>Our Memories</title>
+  <style>
+    :root{
+      --blue:#bde0fe;
+      --blue-soft:#e9f7ff;
+      --pink:#ffc8dd;
+      --pink-soft:#fff0f6;
+      --white:#ffffff;
+      --ink:#54556b;
+      --muted:#888aa0;
+      --line:#e89ac0;
+      --gold:#e7bd55;
+      --gold-soft:#fff4c7;
+      --shadow:0 18px 45px rgba(91, 100, 130, .14);
+      --radius:28px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      min-height:100vh;
+      color:var(--ink);
+      font-family: ui-rounded, "SF Pro Rounded", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background:
+        radial-gradient(circle at 15% 10%, rgba(189,224,254,.72), transparent 28%),
+        radial-gradient(circle at 88% 22%, rgba(255,200,221,.72), transparent 30%),
+        linear-gradient(180deg,#fafdff 0%,#fff8fb 50%,#f2fbff 100%);
+      overflow-x:hidden;
+    }
+    button,input{font:inherit}
+    button{cursor:pointer}
+    .hidden{display:none!important}
+
+    .ambient{
+      position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:0;
+    }
+    .blob{
+      position:absolute; width:340px; height:340px; border-radius:50%;
+      filter:blur(58px); opacity:.28;
+      animation:float 11s ease-in-out infinite alternate;
+    }
+    .blob.b1{background:var(--blue);left:-120px;top:15%}
+    .blob.b2{background:var(--pink);right:-130px;top:48%;animation-delay:-3s}
+    @keyframes float{to{transform:translate3d(25px,-25px,0) scale(1.08)}}
+
+    /* LOCK */
+    .screen{
+      position:relative; z-index:1; min-height:100svh;
+      display:grid; place-items:center; padding:28px 18px;
+    }
+    .lock-card{
+      width:min(92vw,460px);
+      background:rgba(255,255,255,.92);
+      border:1px solid rgba(255,255,255,.9);
+      border-radius:32px;
+      box-shadow:var(--shadow);
+      padding:34px 26px 30px;
+      text-align:center;
+      backdrop-filter:blur(18px);
+    }
+    .tiny-heart{font-size:22px;color:#ef8fb9;margin-bottom:8px}
+    .lock-card h1{margin:0;font-size:clamp(26px,5vw,36px);letter-spacing:-.02em}
+    .lock-card p{margin:10px 0 24px;color:var(--muted)}
+    .pin-row{display:flex;justify-content:center;gap:9px;margin:0 auto 22px}
+    .pin{
+      width:48px;height:58px;border:2px solid #e6e8f0;border-radius:15px;
+      background:#fbfcff;text-align:center;font-size:25px;font-weight:700;color:var(--ink);
+      outline:none; transition:.18s;
+    }
+    .pin:focus{border-color:#95cffa;box-shadow:0 0 0 4px rgba(149,207,250,.18);background:white}
+    .lock-btn{
+      width:82px;height:82px;border:0;border-radius:50%;
+      display:grid;place-items:center;margin:0 auto;
+      background:linear-gradient(135deg,var(--blue),var(--pink));
+      box-shadow:0 12px 28px rgba(226,141,181,.28);
+      color:#fff; transition:transform .2s,box-shadow .2s;
+    }
+    .lock-btn:hover{transform:translateY(-2px);box-shadow:0 16px 34px rgba(226,141,181,.34)}
+    .lock-btn svg{width:37px;height:37px}
+    .status{height:22px;margin-top:16px;font-size:14px;color:#d86888}
+    .shake{animation:shake .42s ease}
+    @keyframes shake{
+      0%,100%{transform:translateX(0)}20%{transform:translateX(-10px)}40%{transform:translateX(9px)}
+      60%{transform:translateX(-7px)}80%{transform:translateX(5px)}
+    }
+    .unlocking .closed-lock{display:none}
+    .open-lock{display:none}
+    .unlocking .open-lock{display:block;animation:unlockPop .75s ease both}
+    .unlocking{animation:unlockGlow .85s ease both}
+    @keyframes unlockPop{50%{transform:scale(1.25) rotate(-8deg)}}
+    @keyframes unlockGlow{50%{box-shadow:0 0 0 18px rgba(255,200,221,.18),0 0 50px rgba(189,224,254,.85)}}
+
+    /* SHOWCASE */
+    #showcaseScreen{
+      align-items:stretch;
+      place-items:stretch;
+      padding:0;
+    }
+    .showcase-wrap{
+      min-height:100svh; display:grid; place-items:center; padding:26px 18px;
+    }
+    .showcase-card{
+      width:min(92vw,900px); min-height:min(74svh,680px);
+      background:rgba(255,255,255,.82);
+      border:1px solid rgba(255,255,255,.92);
+      border-radius:38px; box-shadow:var(--shadow);
+      padding:clamp(34px,7vw,74px);
+      display:flex;flex-direction:column;justify-content:center;align-items:center;
+      text-align:center; backdrop-filter:blur(20px);
+      position:relative; overflow:hidden;
+    }
+    .showcase-card:before,.showcase-card:after{
+      content:"";position:absolute;border-radius:50%;filter:blur(6px);opacity:.5
+    }
+    .showcase-card:before{width:180px;height:180px;background:var(--blue);left:-80px;top:-70px}
+    .showcase-card:after{width:200px;height:200px;background:var(--pink);right:-90px;bottom:-90px}
+    .showcase-eyebrow{font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:#d477a4;font-weight:700}
+    .showcase-accent{font-size:44px;margin:18px 0 6px}
+    .showcase-title{font-size:clamp(34px,7vw,72px);line-height:1.02;margin:0;letter-spacing:-.045em}
+    .showcase-body{max-width:620px;font-size:clamp(16px,2.3vw,22px);line-height:1.7;color:#74768a;margin:22px 0 38px}
+    .next-btn{
+      border:0;border-radius:999px;padding:14px 24px;font-weight:800;color:#586070;
+      background:linear-gradient(90deg,#dff3ff,#ffe4ef);
+      box-shadow:0 10px 24px rgba(93,102,136,.12);
+    }
+    .progress-dots{display:flex;gap:8px;position:absolute;bottom:24px}
+    .progress-dot{width:8px;height:8px;border-radius:50%;background:#d9dbe4}
+    .progress-dot.active{width:24px;border-radius:999px;background:linear-gradient(90deg,#88c8f4,#ef99bd)}
+
+    /* TIMELINE */
+    #memoriesScreen{display:block;min-height:100svh;padding:0}
+    .memory-header{
+      position:relative;z-index:3;text-align:center;padding:74px 18px 34px;
+    }
+    .memory-header .mini{color:#df8fb4;font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-size:12px}
+    .memory-header h2{font-size:clamp(38px,7vw,70px);margin:8px 0 8px;letter-spacing:-.04em}
+    .memory-header p{margin:0;color:var(--muted)}
+    .timeline{
+      position:relative; width:min(1120px,96vw); margin:0 auto; padding:30px 0 120px;
+    }
+    .timeline-track{
+      position:absolute;left:50%;top:0;bottom:70px;width:3px;transform:translateX(-50%);
+      border-radius:999px;background:rgba(231,146,186,.18);overflow:hidden;
+    }
+    .timeline-progress{
+      width:100%;height:0;background:linear-gradient(180deg,#8bcdf6 0%,#e88fb8 52%,#e4b952 100%);
+      border-radius:999px;box-shadow:0 0 14px rgba(231,143,184,.28);
+      transition:height .08s linear;
+    }
+    .memory-row{
+      min-height:360px;position:relative;display:grid;grid-template-columns:1fr 1fr;
+      align-items:center;padding:34px 0;
+    }
+    .center-node{
+      position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+      width:24px;height:24px;border-radius:50%;border:4px solid #e389b5;background:white;
+      box-shadow:0 0 0 7px rgba(255,200,221,.26);z-index:4;transition:.25s;
+    }
+    .center-node:hover{transform:translate(-50%,-50%) scale(1.14)}
+    .memory-row.special .center-node{
+      border-color:var(--gold);
+      box-shadow:0 0 0 7px rgba(245,201,106,.22),0 0 26px rgba(231,189,85,.42);
+    }
+    .side{min-width:0;position:relative;display:flex;align-items:center}
+    .side.left{justify-content:flex-end;padding-right:58px}
+    .side.right{justify-content:flex-start;padding-left:58px}
+    .info-card{
+      max-width:330px;opacity:0;transform:translateY(10px) scale(.98);
+      pointer-events:none;transition:.42s ease;
+    }
+    .info-card.visible{opacity:1;transform:none;pointer-events:auto}
+    .info-card .title{font-size:clamp(16px,2.2vw,22px);font-weight:800;margin:9px 0 0;color:#626477}
+    .info-card .desc{font-size:14px;line-height:1.6;color:#9495a5;margin:8px 0 0}
+    .date-btn{
+      border:1px solid rgba(227,137,181,.22);background:rgba(255,255,255,.82);
+      color:#c56996;padding:11px 16px;border-radius:999px;font-weight:900;letter-spacing:.03em;
+      box-shadow:0 8px 20px rgba(92,102,132,.08);
+    }
+    .memory-row.special .date-btn{
+      color:#9d781d;border-color:rgba(231,189,85,.42);
+      background:linear-gradient(110deg,#fff,#fff5cc,#fff);
+      background-size:220% 100%;animation:goldShimmer 3.2s linear infinite;
+    }
+    @keyframes goldShimmer{to{background-position:-220% 0}}
+    .photos-wrap{
+      width:min(100%,430px);display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:16px;opacity:0;transform:translateY(20px) scale(.97);pointer-events:none;transition:.55s cubic-bezier(.2,.8,.2,1);
+    }
+    .photos-wrap.visible{opacity:1;transform:none;pointer-events:auto}
+    .polaroid{
+      background:#fff;padding:10px 10px 27px;border-radius:3px;
+      box-shadow:0 14px 32px rgba(64,73,104,.18);
+      transform:rotate(var(--tilt));transition:transform .28s ease,box-shadow .28s ease;
+      position:relative;
+    }
+    .polaroid:hover{transform:rotate(0deg) scale(1.035);box-shadow:0 18px 40px rgba(64,73,104,.24);z-index:2}
+    .polaroid img{
+      display:block;width:100%;aspect-ratio:4/3;object-fit:cover;background:linear-gradient(135deg,#dff3ff,#ffe7f0);
+      border-radius:1px;
+    }
+    .polaroid figcaption{padding-top:12px;text-align:center;font-size:12px;color:#747688;line-height:1.35}
+    .memory-row.special .polaroid{
+      outline:2px solid rgba(231,189,85,.85);outline-offset:2px;
+      box-shadow:0 12px 34px rgba(184,141,39,.22),0 0 24px rgba(245,201,106,.18);
+    }
+    .memory-row.special .polaroid:after{
+      content:"✦";position:absolute;right:-10px;top:-15px;color:#d6a92e;font-size:22px;
+      text-shadow:-28px 36px 0 rgba(231,189,85,.72),-6px 145px 0 rgba(231,189,85,.55);
+      animation:sparkle 1.7s ease-in-out infinite alternate;
+    }
+    @keyframes sparkle{to{opacity:.28;transform:scale(.78) rotate(20deg)}}
+    .empty-photos{
+      padding:18px;border-radius:18px;background:rgba(255,255,255,.7);color:#9698a9;font-size:14px
+    }
+    .footer-note{text-align:center;color:#aaaabd;padding:0 16px 60px;font-size:13px}
+
+    @media(max-width:700px){
+      .pin{width:42px;height:54px}
+      .timeline{width:100vw}
+      .memory-row{min-height:330px;padding:30px 0}
+      .side.left{padding-right:30px;padding-left:8px}
+      .side.right{padding-left:30px;padding-right:8px}
+      .info-card{max-width:155px}
+      .info-card .title{font-size:14px}
+      .info-card .desc{font-size:12px}
+      .date-btn{font-size:12px;padding:9px 11px}
+      .photos-wrap{gap:8px;grid-template-columns:1fr}
+      .photos-wrap.multi{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .polaroid{padding:6px 6px 20px}
+      .polaroid figcaption{font-size:10px;padding-top:8px}
+      .center-node{width:20px;height:20px;border-width:3px}
+    }
+  </style>
+</head>
+<body>
+  <div class="ambient" aria-hidden="true">
+    <div class="blob b1"></div><div class="blob b2"></div>
+  </div>
+
+  <main id="lockScreen" class="screen">
+    <section id="lockCard" class="lock-card">
+      <div class="tiny-heart">♡</div>
+      <h1>Enter our password</h1>
+      <p>6 digits, just for us.</p>
+
+      <div class="pin-row" id="pinRow">
+        <input class="pin" inputmode="numeric" maxlength="1" aria-label="Digit 1">
+        <input class="pin" inputmode="numeric" maxlength="1" aria-label="Digit 2">
+        <input class="pin" inputmode="numeric" maxlength="1" aria-label="Digit 3">
+        <input class="pin" inputmode="numeric" maxlength="1" aria-label="Digit 4">
+        <input class="pin" inputmode="numeric" maxlength="1" aria-label="Digit 5">
+        <input class="pin" inputmode="numeric" maxlength="1" aria-label="Digit 6">
+      </div>
+
+      <button id="lockBtn" class="lock-btn" type="button" aria-label="Unlock">
+        <svg class="closed-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9">
+          <rect x="5" y="10" width="14" height="10" rx="3"></rect>
+          <path d="M8 10V7a4 4 0 0 1 8 0v3"></path>
+          <circle cx="12" cy="15" r="1.2" fill="currentColor" stroke="none"></circle>
+        </svg>
+        <svg class="open-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9">
+          <rect x="5" y="10" width="14" height="10" rx="3"></rect>
+          <path d="M8 10V7a4 4 0 0 1 7.6-1.75"></path>
+          <circle cx="12" cy="15" r="1.2" fill="currentColor" stroke="none"></circle>
+        </svg>
+      </button>
+      <div id="status" class="status" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <main id="showcaseScreen" class="screen hidden">
+    <div class="showcase-wrap">
+      <section class="showcase-card">
+        <div id="showcaseEyebrow" class="showcase-eyebrow"></div>
+        <div id="showcaseAccent" class="showcase-accent">♡</div>
+        <h2 id="showcaseTitle" class="showcase-title"></h2>
+        <p id="showcaseBody" class="showcase-body"></p>
+        <button id="nextBtn" class="next-btn" type="button">Next →</button>
+        <div id="progressDots" class="progress-dots"></div>
+      </section>
+    </div>
+  </main>
+
+  <main id="memoriesScreen" class="hidden">
+    <header class="memory-header">
+      <div class="mini">Our little timeline</div>
+      <h2 id="memoryTitle">Our Memories</h2>
+      <p id="memorySubtitle">Every moment with you ♡</p>
+    </header>
+
+    <section id="timeline" class="timeline">
+      <div class="timeline-track"><div id="timelineProgress" class="timeline-progress"></div></div>
+      <div id="timelineItems"></div>
+    </section>
+    <div class="footer-note">Tap a timeline dot → tap the date → reveal the Polaroids ♡</div>
+  </main>
+
+  <script>
+    const state = { appData:null, showcaseIndex:0 };
+
+    const $ = (s) => document.querySelector(s);
+    const $$ = (s) => [...document.querySelectorAll(s)];
+
+    const pinInputs = $$('.pin');
+    pinInputs.forEach((input, index) => {
+      input.addEventListener('input', () => {
+        input.value = input.value.replace(/\D/g,'').slice(0,1);
+        if (input.value && index < pinInputs.length - 1) pinInputs[index+1].focus();
+      });
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Backspace' && !input.value && index > 0) pinInputs[index-1].focus();
+        if (e.key === 'Enter') tryUnlock();
+      });
+      input.addEventListener('paste', (e) => {
+        const text = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g,'').slice(0,6);
+        if (text.length === 6) {
+          e.preventDefault();
+          text.split('').forEach((d,i)=>pinInputs[i].value=d);
+          pinInputs[5].focus();
+        }
+      });
+    });
+
+    $('#lockBtn').addEventListener('click', tryUnlock);
+
+    function getPin(){ return pinInputs.map(i=>i.value).join(''); }
+
+    function tryUnlock(){
+      const pin = getPin();
+      const status = $('#status');
+      if (pin.length !== 6) {
+        status.textContent = 'Please enter all 6 digits ♡';
+        wrongAnimation();
+        return;
+      }
+      status.textContent = 'Checking…';
+      $('#lockBtn').disabled = true;
+
+      google.script.run
+        .withSuccessHandler((result) => {
+          $('#lockBtn').disabled = false;
+          if (result && result.ok) {
+            status.textContent = '';
+            $('#lockBtn').classList.add('unlocking');
+            setTimeout(loadAfterUnlock, 780);
+          } else {
+            status.textContent = (result && result.message) || 'That password is not ours ♡';
+            wrongAnimation();
+            pinInputs.forEach(i=>i.value='');
+            pinInputs[0].focus();
+          }
+        })
+        .withFailureHandler((err) => {
+          $('#lockBtn').disabled = false;
+          status.textContent = 'Could not connect. Please try again.';
+          wrongAnimation();
+          console.error(err);
+        })
+        .verifyPassword(pin);
+    }
+
+    function wrongAnimation(){
+      const card = $('#lockCard'), btn = $('#lockBtn');
+      card.classList.remove('shake'); btn.classList.remove('shake');
+      void card.offsetWidth;
+      card.classList.add('shake'); btn.classList.add('shake');
+      setTimeout(()=>{card.classList.remove('shake');btn.classList.remove('shake')},500);
+    }
+
+    function loadAfterUnlock(){
+      google.script.run
+        .withSuccessHandler((data) => {
+          state.appData = data || {};
+          $('#lockScreen').classList.add('hidden');
+          setupShowcase();
+          $('#showcaseScreen').classList.remove('hidden');
+        })
+        .withFailureHandler((err)=>{
+          $('#status').textContent = 'Unlocked, but data could not be loaded.';
+          $('#lockBtn').classList.remove('unlocking');
+          console.error(err);
+        })
+        .getAppData();
+    }
+
+    function setupShowcase(){
+      state.showcaseIndex = 0;
+      const pages = state.appData.showcase || [];
+      if (!pages.length) return openMemories();
+      renderShowcase();
+      $('#nextBtn').onclick = () => {
+        if (state.showcaseIndex < pages.length - 1) {
+          state.showcaseIndex++;
+          renderShowcase();
+        } else {
+          openMemories();
+        }
+      };
+    }
+
+    function renderShowcase(){
+      const pages = state.appData.showcase || [];
+      const page = pages[state.showcaseIndex] || {};
+      $('#showcaseEyebrow').textContent = page.eyebrow || '';
+      $('#showcaseAccent').textContent = page.accent || '♡';
+      $('#showcaseTitle').textContent = page.title || '';
+      $('#showcaseBody').textContent = page.body || '';
+      $('#nextBtn').textContent = state.showcaseIndex === pages.length - 1 ? 'Open Our Memories ♡' : 'Next →';
+
+      $('#progressDots').innerHTML = pages.map((_,i)=>
+        `<span class="progress-dot ${i===state.showcaseIndex?'active':''}"></span>`
+      ).join('');
+    }
+
+    function openMemories(){
+      $('#showcaseScreen').classList.add('hidden');
+      $('#memoriesScreen').classList.remove('hidden');
+
+      const meta = state.appData.app || {};
+      $('#memoryTitle').textContent = meta.title || 'Our Memories';
+      $('#memorySubtitle').textContent = meta.subtitle || 'Every moment with you ♡';
+
+      renderTimeline(state.appData.memories || []);
+      requestAnimationFrame(updateTimelineProgress);
+      window.addEventListener('scroll', updateTimelineProgress, {passive:true});
+      window.scrollTo({top:0,behavior:'smooth'});
+    }
+
+    function renderTimeline(memories){
+      const sorted = [...memories].sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+      $('#timelineItems').innerHTML = sorted.map((m,index)=>memoryTemplate(m,index)).join('');
+
+      $$('.center-node').forEach(btn=>{
+        btn.addEventListener('click',()=>{
+          const row = btn.closest('.memory-row');
+          row.querySelector('.info-card').classList.toggle('visible');
+        });
+      });
+
+      $$('.date-btn').forEach(btn=>{
+        btn.addEventListener('click',()=>{
+          const row = btn.closest('.memory-row');
+          row.querySelector('.photos-wrap').classList.toggle('visible');
+        });
+      });
+    }
+
+    function memoryTemplate(m,index){
+      const infoOnRight = index % 2 === 0;
+      const info = `
+        <div class="info-card">
+          <button type="button" class="date-btn">${escapeHtml(m.displayDate || m.date || 'A special day')}</button>
+          <div class="title">${escapeHtml(m.title || '')}</div>
+          ${m.description ? `<div class="desc">${escapeHtml(m.description)}</div>` : ''}
+        </div>`;
+
+      const photos = photosTemplate(m);
+      const left = infoOnRight ? photos : info;
+      const right = infoOnRight ? info : photos;
+
+      return `
+        <article class="memory-row ${m.special?'special':''}">
+          <div class="side left">${left}</div>
+          <button class="center-node" type="button" aria-label="Reveal memory"></button>
+          <div class="side right">${right}</div>
+        </article>`;
+    }
+
+    function photosTemplate(m){
+      const list = Array.isArray(m.photos) ? m.photos : [];
+      if (!list.length) {
+        return `<div class="photos-wrap"><div class="empty-photos">Add photos to this memory in data.json ♡</div></div>`;
+      }
+      const cards = list.map((p,i)=>{
+        const tilts = ['-2.8deg','2.2deg','-1.2deg','3deg','-2deg','1.4deg'];
+        const src = assetUrl(p.src || '');
+        return `
+          <figure class="polaroid" style="--tilt:${tilts[i % tilts.length]}">
+            <img src="${escapeAttr(src)}" alt="${escapeAttr(p.alt || m.title || 'Memory photo')}" loading="lazy">
+            <figcaption>${escapeHtml(p.caption || '')}</figcaption>
+          </figure>`;
+      }).join('');
+      return `<div class="photos-wrap ${list.length>1?'multi':''}">${cards}</div>`;
+    }
+
+    function assetUrl(src){
+      if (!src) return '';
+      if (/^https?:\/\//i.test(src)) return src;
+      const base = (state.appData.assetBaseUrl || '').replace(/\/$/,'');
+      return `${base}/${src.replace(/^\//,'')}`;
+    }
+
+    function escapeHtml(v){
+      return String(v ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+    }
+    function escapeAttr(v){ return escapeHtml(v); }
+
+    function updateTimelineProgress(){
+      const timeline = $('#timeline');
+      if (!timeline || $('#memoriesScreen').classList.contains('hidden')) return;
+      const rect = timeline.getBoundingClientRect();
+      const viewport = window.innerHeight;
+      const traveled = viewport * .55 - rect.top;
+      const max = Math.max(1, rect.height - 120);
+      const pct = Math.max(0, Math.min(1, traveled/max));
+      $('#timelineProgress').style.height = `${pct*100}%`;
+    }
+
+    window.addEventListener('load',()=>pinInputs[0]?.focus());
+  </script>
+</body>
+</html>
